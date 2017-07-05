@@ -1,13 +1,24 @@
 <launch>
 
+	<arg name="rosbag_enabled" default="false"/>
+	<arg name="rosbag_prefix_url" default="/tmp"/>
+
 	<arg name="propulsion_mode_index" default="0"/>
 	<arg name="motor_propulsion_scalar" default="1.0"/>
+
+	<arg name="left_motor_topic" default="left_motor_topic"/>
+	<arg name="right_motor_topic" default="right_motor_topic"/>
 
 	<node name="nautonomous_propulsion_publisher" pkg="nautonomous_propulsion_publisher" type="differential_test_publisher_node" output="screen">
 
 		<param name="propulsion_mode_index" type="int" value="$(arg propulsion_mode_index)"/>
 		<param name="motor_propulsion_scalar" type="double" value="$(arg motor_propulsion_scalar)"/>
 		
+		<remap from="left_motor_topic" to="$(arg left_motor_topic)"/>
+		<remap from="right_motor_topic" to="$(arg right_motor_topic)"/>
+
 	</node>
+
+	<node pkg="rosbag" type="record" name="rosbag_propulsion_publisher" args="record -o $(arg rosbag_prefix_url)/propulsion/publisher $(arg left_motor_topic) $(arg right_motor_topic)" output="screen" if="$(arg rosbag_enabled)"/>
 
 </launch>
